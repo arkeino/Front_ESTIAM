@@ -1,19 +1,16 @@
-import axios, {AxiosRequestConfig} from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 import { User } from '../types/User';
-import {Error} from '../types/Error';
+import { Error } from '../types/Error';
 
 class UsersApi {
   private async makeRequest(config: AxiosRequestConfig): Promise<any> {
     try {
-      const response = await axios({
-        ...config
-      });
-
+      const response = await axios({ ...config });
       return response.data;
     } catch (e: any) {
       return {
         error: true,
-        message: e?.response?.data?.message
+        message: e?.response?.data?.message,
       };
     }
   }
@@ -21,14 +18,14 @@ class UsersApi {
   async getUsers(): Promise<User[]> {
     return this.makeRequest({
       method: 'GET',
-      url: 'https://api.escuelajs.co/api/v1/users'
+      url: 'https://api.escuelajs.co/api/v1/users',
     });
   }
 
   async getUserById(id: string): Promise<User> {
     return this.makeRequest({
       method: 'GET',
-      url: `https://api.escuelajs.co/api/v1/users/${id}`
+      url: `https://api.escuelajs.co/api/v1/users/${id}`,
     });
   }
 
@@ -36,7 +33,7 @@ class UsersApi {
     return this.makeRequest({
       method: 'PUT',
       url: `https://api.escuelajs.co/api/v1/users/${id}`,
-      data: user
+      data: user,
     });
   }
 
@@ -44,7 +41,7 @@ class UsersApi {
     return this.makeRequest({
       method: 'POST',
       url: `https://api.escuelajs.co/api/v1/users`,
-      data: user
+      data: user,
     });
   }
 
@@ -55,14 +52,14 @@ class UsersApi {
     });
   }
 
-  async login(email: string, password: string): Promise<{access_token: string} | Error> {
+  async login(email: string, password: string): Promise<{ access_token: string } | Error> {
     return this.makeRequest({
       method: 'POST',
       url: `https://api.escuelajs.co/api/v1/auth/login`,
       data: {
         email,
-        password
-      }
+        password,
+      },
     });
   }
 
@@ -71,8 +68,8 @@ class UsersApi {
       method: 'GET',
       url: 'https://api.escuelajs.co/api/v1/auth/profile',
       headers: {
-        Authorization: `Bearer ${accessToken}`
-      }
+        Authorization: `Bearer ${accessToken}`,
+      },
     });
   }
 }

@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider, AuthConsumer } from './contexts/jwt-context';
 import { SplashScreen } from './components/SplashScreen';
-import Routes from './Routes';
+import AppRoutes from './Routes';
 import './App.css';
 
 function App() {
@@ -14,7 +14,7 @@ function App() {
 
           return showSplashScreen ? <SplashScreen /> : (
             <BrowserRouter>
-              <Routes />
+              <AppRoutes />
             </BrowserRouter>
           );
         }}
@@ -24,3 +24,4 @@ function App() {
 }
 
 export default App;
+
