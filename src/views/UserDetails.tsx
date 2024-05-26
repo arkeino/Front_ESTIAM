@@ -1,29 +1,28 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import DashboardLayout from '../layouts/Dashboard';
 import Box from "@mui/material/Box";
 import { useParams, useNavigate } from 'react-router-dom';
 import Card from '@mui/material/Card';
-import {User} from '../types/User';
-import {usersApi} from '../api/users-api';
+import { User } from '../types/User';
+import { usersApi } from '../api/users-api';
 import Typography from '@mui/material/Typography';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Alert from '@mui/material/Alert';
-import {Error} from '../types/Error';
+import { Error } from '../types/Error';
 
-const UserDetails = (): JSX.Element => {
+const UserDetailView = (): JSX.Element => {
+  const { id } = useParams();
+  const navigate = useNavigate();
 
-  let { id } = useParams();
-  let navigate = useNavigate();
-
-  const [isEditUser, setIsEditUser] = useState<boolean>(false);
-  const [errorObj, setErrorObj] = useState<Error>({
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [notification, setNotification] = useState<Error>({
     error: false,
     message: '',
   });
-  const [user, setUser] = useState<User>({
+  const [userInfo, setUserInfo] = useState<User>({
     avatar: '',
     email: '',
     id: 0,
@@ -31,17 +30,17 @@ const UserDetails = (): JSX.Element => {
     role: ''
   });
 
-  const handleEditUser = async () => {
-    setIsEditUser(!isEditUser);
+  const toggleEditUser = async () => {
+    setIsEditing(!isEditing);
 
-    if (isEditUser && user.id) {
+    if (isEditing && userInfo.id) {
       try {
-        const userResponse = await usersApi.updateUser(user.id, user);
+        const response = await usersApi.updateUser(userInfo.id, userInfo);
 
-        if ('error' in userResponse && userResponse.error) {
-          setErrorObj({
-            error: userResponse.error,
-            message: userResponse.message
+        if ('error' in response && response.error) {
+          setNotification({
+            error: response.error,
+            message: response.message
           });
         }
       } catch (e) {
@@ -51,85 +50,83 @@ const UserDetails = (): JSX.Element => {
   };
 
   const handleDeleteUser = async () => {
-    if (user.id) {
-      await usersApi.deleteUser(user.id);
+    if (userInfo.id) {
+      await usersApi.deleteUser(userInfo.id);
       navigate('/users');
     }
   };
 
-  const getUser = useCallback(async () => {
+  const fetchUser = useCallback(async () => {
     if (id) {
-      const userResponse = await usersApi.getUserById(id);
-      setUser(userResponse);
-
+      const response = await usersApi.getUserById(id);
+      setUserInfo(response);
     }
-  }, []);
+  }, [id]);
 
   useEffect(() => {
-    getUser();
-  }, []);
+    fetchUser();
+  }, [fetchUser]);
 
   return (
     <DashboardLayout>
       <Box
         display="flex"
         justifyContent="center"
+        sx={{ backgroundColor: '#2e2e2e', minHeight: '100vh', padding: 4 }}
       >
         <Stack spacing={2}>
-          {
-            errorObj.error && (
-              <Alert severity="error">{errorObj.message}</Alert>
-            )
-          }
+          {notification.error && (
+            <Alert severity="error">{notification.message}</Alert>
+          )}
 
           <Card
             variant="outlined"
             sx={{
               width: 500,
-              borderColor: 'blue',
+              borderColor: 'lightgray',
               textAlign: 'center',
+              backgroundColor: '#f5f5f5',
+              color: '#333',
             }}
           >
             <Avatar
-              alt={user.name}
-              src={user.avatar}
+              alt={userInfo.name}
+              src={userInfo.avatar}
               sx={{
                 width: 90,
                 height: 90,
                 display: 'flex',
-                margin: 'auto'
+                margin: 'auto',
+                marginTop: 2,
               }}
             />
-            {/*
-            Comments
-            */}
             <Typography variant="h6" gutterBottom>
-              <strong>User ID:</strong> {user.id}
+              <strong>User ID:</strong> {userInfo.id}
             </Typography>
 
             <Typography variant="h6" gutterBottom>
-              <strong>Username:{' '}</strong>
-              {
-                isEditUser ? (
-                  <TextField
-                    size="small"
-                    variant="outlined"
-                    value={user.name}
-                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                      setUser({
-                        ...user,
-                        name: event.target.value
-                      });
-                    }}
-                  />
-                ) : user.name
-              }
+              <strong>Username:</strong>{' '}
+              {isEditing ? (
+                <TextField
+                  size="small"
+                  variant="outlined"
+                  value={userInfo.name}
+                  onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                    setUserInfo({
+                      ...userInfo,
+                      name: event.target.value
+                    });
+                  }}
+                />
+              ) : (
+                userInfo.name
+              )}
             </Typography>
             <Typography variant="h6" gutterBottom>
-              <strong>Email:</strong> {user.email}
+              <strong>Email:</strong> {userInfo.email}
             </Typography>
             <Typography variant="h6" gutterBottom>
-              <strong>Role:</strong> {user.role}
+              <strong>Role:</strong> {userInfo.role}
             </Typography>
           </Card>
           <Stack
@@ -139,12 +136,14 @@ const UserDetails = (): JSX.Element => {
           >
             <Button
               variant="contained"
-              onClick={handleEditUser}
+              color="primary"
+              onClick={toggleEditUser}
             >
-              {isEditUser ? 'Save' : 'Edit'}
+              {isEditing ? 'Save' : 'Edit'}
             </Button>
             <Button
               variant="contained"
+              color="secondary"
               onClick={handleDeleteUser}
             >
               Delete
@@ -156,4 +155,4 @@ const UserDetails = (): JSX.Element => {
   );
 };
 
-export default UserDetails;
+export default UserDetailView;

@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import { Error } from '../types/Error';
 import { useAuth } from '../hooks/use-auth';
 
-const UserDetails = (): JSX.Element => {
+const Login = (): JSX.Element => {
   const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
@@ -25,17 +25,11 @@ const UserDetails = (): JSX.Element => {
   const [openSnackbarSuccess, setOpenSnackbarSuccess] = useState(false);
   const [openSnackbarError, setOpenSnackbarError] = useState(false);
 
-  const handleCloseSnackbarSuccess = (event?: React.SyntheticEvent | Event, reason?: string) => {
-    if (reason === 'clickaway') {
-      return;
-    }
+  const handleCloseSnackbarSuccess = () => {
     setOpenSnackbarSuccess(false);
   };
 
-  const handleCloseSnackbarError = (event?: React.SyntheticEvent | Event, reason?: string) => {
-    if (reason === 'clickaway') {
-      return;
-    }
+  const handleCloseSnackbarError = () => {
     setOpenSnackbarError(false);
   };
 
@@ -75,78 +69,65 @@ const UserDetails = (): JSX.Element => {
     <Box
       display="flex"
       justifyContent="center"
-      sx={{
-        marginTop: 30
-      }}
+      alignItems="center"
+      sx={{ height: '100vh', backgroundColor: '#333' }}
     >
       <Card
         sx={{
           textAlign: 'center',
-          width: '50%'
+          width: '50%',
+          backgroundColor: '#fff',
+          padding: '20px',
+          borderRadius: '10px',
+          boxShadow: '0px 0px 10px 0px rgba(0,0,0,0.1)'
         }}
       >
-        <CardContent
-          sx={{
-            padding: 3
-          }}
-        >
-          <Typography
-            variant="h4"
-            color="textPrimary"
-          >
+        <CardContent>
+          <Typography variant="h4" color="textPrimary" gutterBottom>
             Login
           </Typography>
-          <Box mt={5}>
-            <form onSubmit={handleSubmit}>
-              <TextField
-                fullWidth
-                autoFocus
-                label="Email Address"
-                margin="normal"
-                name="email"
-                type="email"
-                variant="outlined"
-                value={formik.values.email}
-                onChange={handleChange}
-                error={
-                  formik.touched.email && Boolean(formik.errors.email)
-                }
-                helperText={formik.touched.email && formik.errors.email}
-              />
-              <TextField
-                fullWidth
-                label="Password"
-                margin="normal"
-                name="password"
-                type="password"
-                variant="outlined"
-                value={formik.values.password}
-                onChange={handleChange}
-                error={
-                  formik.touched.password && Boolean(formik.errors.password)
-                }
-                helperText={formik.touched.password && formik.errors.password}
-              />
-
-              {
-                errorObj.error && (
-                  <Box mt={2}>
-                    <Alert severity="error">{errorObj.message}</Alert>
-                  </Box>
-                )
-              }
+          <form onSubmit={handleSubmit}>
+            <TextField
+              fullWidth
+              autoFocus
+              label="Email Address"
+              margin="normal"
+              name="email"
+              type="email"
+              variant="outlined"
+              value={formik.values.email}
+              onChange={handleChange}
+              error={formik.touched.email && Boolean(formik.errors.email)}
+              helperText={formik.touched.email && formik.errors.email}
+            />
+            <TextField
+              fullWidth
+              label="Password"
+              margin="normal"
+              name="password"
+              type="password"
+              variant="outlined"
+              value={formik.values.password}
+              onChange={handleChange}
+              error={formik.touched.password && Boolean(formik.errors.password)}
+              helperText={formik.touched.password && formik.errors.password}
+            />
+            {errorObj.error && (
               <Box mt={2}>
-                <Button
-                  color="primary"
-                  size="large"
-                  type="submit"
-                  variant="contained"
-                >
-                  Log In
-                </Button>
+                <Alert severity="error">{errorObj.message}</Alert>
               </Box>
-            </form>
-          </Box>
+            )}
+            <Box mt={2}>
+              <Button
+                color="error"
+                size="large"
+                type="submit"
+                variant="contained"
+              >
+                Log In
+              </Button>
+            </Box>
+          </form>
         </CardContent>
       </Card>
       <Snackbar
@@ -155,7 +136,7 @@ const UserDetails = (): JSX.Element => {
         onClose={handleCloseSnackbarSuccess}
       >
         <Alert onClose={handleCloseSnackbarSuccess} severity="success" sx={{ width: '100%' }}>
-          User created!
+          User login successful!
         </Alert>
       </Snackbar>
       <Snackbar
@@ -164,11 +145,11 @@ const UserDetails = (): JSX.Element => {
         onClose={handleCloseSnackbarError}
       >
         <Alert onClose={handleCloseSnackbarError} severity="error" sx={{ width: '100%' }}>
-          User not created!
+          User login failed!
         </Alert>
       </Snackbar>
     </Box>
   );
 };
 
-export default UserDetails;
+export default Login;

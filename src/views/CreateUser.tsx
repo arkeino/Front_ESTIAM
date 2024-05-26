@@ -1,135 +1,140 @@
-import React, { useState } from 'react';
-import Box from "@mui/material/Box";
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import Alert from '@mui/material/Alert';
-import Snackbar from '@mui/material/Snackbar';
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useCallback, useState } from 'react';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import Pagination from '@mui/material/Pagination';
+import UserCard from '../components/UserCard';
 import { usersApi } from '../api/users-api';
 import { User } from '../types/User';
+import DashboardLayout from '../layouts/Dashboard';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import CreateUserDialog from '../components/CreateUserDialog';
 
-const CreateUser = (): JSX.Element => {
-  const navigate = useNavigate();
-  const [openSnackbarSuccess, setOpenSnackbarSuccess] = useState(false);
-  const [openSnackbarError, setOpenSnackbarError] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
+const USERS_PER_PAGE = 5;
 
-  const handleCloseSnackbarSuccess = (event?: React.SyntheticEvent | Event, reason?: string) => {
-    if (reason === 'clickaway') return;
-    setOpenSnackbarSuccess(false);
+const Users = (): JSX.Element => {
+  const [users, setUsers] = useState<User[]>([]);
+  const [openUserDialog, setOpenUserDialog] = useState<boolean>(false);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalUsers, setTotalUsers] = useState(0);
+  const [searchText, setSearchText] = useState<string>('');
+
+  const handleOpenUserDialog = () => {
+    setOpenUserDialog(true);
   };
 
-  const handleCloseSnackbarError = (event?: React.SyntheticEvent | Event, reason?: string) => {
-    if (reason === 'clickaway') return;
-    setOpenSnackbarError(false);
-  };
-
-  const formik = useFormik({
-    initialValues: { email: '', name: '', password: '' },
-    validationSchema: Yup.object({
-      email: Yup.string().email('Invalid email address').required('Email is required'),
-      name: Yup.string().required('Username is required'),
-      password: Yup.string().min(6, 'Password must be at least 6 characters').required('Password is required'),
-    }),
-    onSubmit: async (values): Promise<void> => {
-      console.log('Form values:', values);
-      try {
-        const response = await usersApi.createUser(values as User);
-        if ('error' in response) {
-          throw new Error(response.message);
-        }
-        setOpenSnackbarSuccess(true);
-        navigate('/users');
-      } catch (err) {
-        if (err instanceof Error) {
-          setErrorMessage(err.message || 'Failed to create user!');
-        } else {
-          setErrorMessage('Failed to create user!');
-        }
-        setOpenSnackbarError(true);
-      }
+  const handleCloseUserDialog = (action?: string, user?: User) => {
+    if (action === 'created' && user) {
+      setUsers([...users, user]);
     }
-  });
+    setOpenUserDialog(false);
+  };
+
+  const getUsers = useCallback(async () => {
+    const usersResponse = await usersApi.getUsers();
+    setUsers(usersResponse);
+    setTotalUsers(usersResponse.length);
+  }, []);
+
+  useEffect(() => {
+    getUsers();
+  }, []);
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchText(event.target.value.toLowerCase());
+  };
+
+  const filteredUsers = users.filter((user) =>
+    user.name.toLowerCase().includes(searchText)
+  );
+
+  const handlePageChange = (event: React.ChangeEvent<unknown>, newPage: number) => {
+    setCurrentPage(newPage);
+  };
+
+  const paginatedUsers: User[] = filteredUsers.slice(
+    (currentPage - 1) * USERS_PER_PAGE,
+    currentPage * USERS_PER_PAGE
+  );
 
   return (
-    <Box display="flex" justifyContent="center" sx={{ marginTop: 30 }}>
-      <Card sx={{ textAlign: 'center', width: '50%' }}>
-        <CardContent sx={{ padding: 3 }}>
-          <Typography variant="h4" color="textPrimary">Create User</Typography>
-          <Box mt={5}>
-            <form onSubmit={formik.handleSubmit}>
-              <TextField
-                fullWidth
-                autoFocus
-                label="Email Address"
-                margin="normal"
-                name="email"
-                type="email"
-                variant="outlined"
-                value={formik.values.email}
-                onChange={formik.handleChange}
-                error={formik.touched.email && Boolean(formik.errors.email)}
-                helperText={formik.touched.email && formik.errors.email}
-              />
-              <TextField
-                fullWidth
-                label="Username"
-                margin="normal"
-                name="name"
-                type="text"
-                variant="outlined"
-                value={formik.values.name}
-                onChange={formik.handleChange}
-                error={formik.touched.name && Boolean(formik.errors.name)}
-                helperText={formik.touched.name && formik.errors.name}
-              />
-              <TextField
-                fullWidth
-                label="Password"
-                margin="normal"
-                name="password"
-                type="password"
-                variant="outlined"
-                value={formik.values.password}
-                onChange={formik.handleChange}
-                error={formik.touched.password && Boolean(formik.errors.password)}
-                helperText={formik.touched.password && formik.errors.password}
-              />
-              <Box mt={2}>
-                <Button color="primary" size="large" type="submit" variant="contained">
+    <Box
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+      sx={{ height: '100vh', backgroundColor: '#333' }}
+    >
+      <DashboardLayout>
+        <Box>
+          <Grid container>
+            <Grid item md={2} />
+            <Grid
+              item
+              container
+              md={8}
+              spacing={2}
+              display="flex"
+              justifyContent="center"
+            >
+              <Grid
+                item
+                xs={8}
+                md={8}
+                display="flex"
+                justifyContent="center"
+              >
+                <TextField
+                  fullWidth
+                  label="Search A User by Name"
+                  variant="outlined"
+                  value={searchText}
+                  onChange={handleSearchChange}
+                />
+              </Grid>
+              <Grid
+                item
+                xs={12}
+                md={12}
+                display="flex"
+                justifyContent="center"
+              >
+                <Button
+                  variant="contained"
+                  color="error"
+                  onClick={handleOpenUserDialog}
+                >
                   Create User
                 </Button>
-              </Box>
-            </form>
-          </Box>
-        </CardContent>
-      </Card>
-      <Snackbar
-        open={openSnackbarSuccess}
-        autoHideDuration={6000}
-        onClose={handleCloseSnackbarSuccess}
-      >
-        <Alert onClose={handleCloseSnackbarSuccess} severity="success" sx={{ width: '100%' }}>
-          User created successfully!
-        </Alert>
-      </Snackbar>
-      <Snackbar
-        open={openSnackbarError}
-        autoHideDuration={6000}
-        onClose={handleCloseSnackbarError}
-      >
-        <Alert onClose={handleCloseSnackbarError} severity="error" sx={{ width: '100%' }}>
-          {errorMessage}
-        </Alert>
-      </Snackbar>
+              </Grid>
+              {paginatedUsers.map((_user) => (
+                <Grid item key={_user.id}>
+                  <UserCard user={_user} />
+                </Grid>
+              ))}
+              <Grid
+                item
+                xs={12}
+                md={12}
+                display="flex"
+                justifyContent="center"
+              >
+                <Pagination
+                  count={Math.ceil(filteredUsers.length / USERS_PER_PAGE)}
+                  page={currentPage}
+                  onChange={handlePageChange}
+                  variant="outlined"
+                  shape="rounded"
+                />
+              </Grid>
+            </Grid>
+            <Grid item md={2} />
+          </Grid>
+        </Box>
+      </DashboardLayout>
+
+      <CreateUserDialog open={openUserDialog} onClose={handleCloseUserDialog} />
     </Box>
   );
 };
 
-export default CreateUser;
-
+export default Users;

@@ -3,8 +3,8 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Pagination from '@mui/material/Pagination';
 import UserCard from '../components/UserCard';
-import {usersApi} from '../api/users-api';
-import {User} from '../types/User';
+import { usersApi } from '../api/users-api';
+import { User } from '../types/User';
 import DashboardLayout from '../layouts/Dashboard';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
@@ -13,32 +13,25 @@ import CreateUserDialog from '../components/CreateUserDialog';
 const USERS_PER_PAGE = 5;
 
 const Users = (): JSX.Element => {
-
   const [users, setUsers] = useState<User[]>([]);
   const [openUserDialog, setOpenUserDialog] = useState<boolean>(false);
-
-  // For pagination
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalUsers, setTotalUsers] = useState(0);
-
-  // For search
   const [searchText, setSearchText] = useState<string>('');
 
   const handleOpenUserDialog = () => {
     setOpenUserDialog(true);
   };
+
   const handleCloseUserDialog = (action?: string, user?: User) => {
     if (action === 'created' && user) {
       setUsers([...users, user]);
     }
-
     setOpenUserDialog(false);
   };
 
-
   const getUsers = useCallback(async () => {
     const usersResponse = await usersApi.getUsers();
-
     setUsers(usersResponse);
     setTotalUsers(usersResponse.length);
   }, []);
@@ -65,81 +58,82 @@ const Users = (): JSX.Element => {
   );
 
   return (
-    <DashboardLayout>
-      <Box>
-        <Grid container>
-          <Grid item md={2} />
-          <Grid
-            item
-            container
-            md={8}
-            spacing={2}
-            display="flex"
-            justifyContent="center"
-          >
+    <Box
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+      sx={{ height: '100vh', backgroundColor: '#333' }}
+    >
+      <DashboardLayout>
+        <Box>
+          <Grid container>
+            <Grid item md={2} />
             <Grid
               item
-              xs={8}
+              container
               md={8}
+              spacing={2}
               display="flex"
               justifyContent="center"
             >
-              <TextField
-                fullWidth
-                label="Search A User by Name"
-                variant="outlined"
-                value={searchText}
-                onChange={handleSearchChange}
-              />
-            </Grid>
-            <Grid
-              item
-              xs={12}
-              md={12}
-              display="flex"
-              justifyContent="center"
-            >
-              <Button
-                variant="contained"
-                onClick={handleOpenUserDialog}
+              <Grid
+                item
+                xs={8}
+                md={8}
+                display="flex"
+                justifyContent="center"
               >
-                Create User
-              </Button>
-            </Grid>
-            {
-              paginatedUsers.map(_user => (
+                <TextField
+                  fullWidth
+                  label="Search A User by Name"
+                  variant="outlined"
+                  value={searchText}
+                  onChange={handleSearchChange}
+                />
+              </Grid>
+              <Grid
+                item
+                xs={12}
+                md={12}
+                display="flex"
+                justifyContent="center"
+              >
+                <Button
+                  variant="contained"
+                  color="error"
+                  onClick={handleOpenUserDialog}
+                >
+                  Create User
+                </Button>
+              </Grid>
+              {paginatedUsers.map((_user) => (
                 <Grid item key={_user.id}>
-                  <UserCard
-                    user={_user}
-                  />
+                  <UserCard user={_user} />
                 </Grid>
-              ))
-            }
-            <Grid
-              item
-              xs={12}
-              md={12}
-              display="flex"
-              justifyContent="center"
-            >
-              <Pagination
-                count={Math.ceil(filteredUsers.length / USERS_PER_PAGE)}
-                page={currentPage}
-                onChange={handlePageChange}
-                variant="outlined"
-                shape="rounded"
-              />
+              ))}
+              <Grid
+                item
+                xs={12}
+                md={12}
+                display="flex"
+                justifyContent="center"
+              >
+                <Pagination
+                  count={Math.ceil(filteredUsers.length / USERS_PER_PAGE)}
+                  page={currentPage}
+                  onChange={handlePageChange}
+                  variant="outlined"
+                  shape="rounded"
+                />
+              </Grid>
             </Grid>
+            <Grid item md={2} />
           </Grid>
-          <Grid item md={2} />
-        </Grid>
-      </Box>
+        </Box>
+      </DashboardLayout>
 
-      <CreateUserDialog
-        open={openUserDialog}
-        onClose={handleCloseUserDialog}
-      />
-    </DashboardLayout>
+      <CreateUserDialog open={openUserDialog} onClose={handleCloseUserDialog} />
+    </Box>
   );
 };
 
