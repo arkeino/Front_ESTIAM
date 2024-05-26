@@ -24,7 +24,8 @@ const UserCard = ({ user }: UserCardProps): JSX.Element => {
       variant="outlined"
       sx={{
         width: 275,
-        borderColor: 'blue',
+        borderColor: 'red',
+        backgroundColor: '#f5f5dc',
         cursor: 'pointer'
       }}
       onClick={handleCardClick}
