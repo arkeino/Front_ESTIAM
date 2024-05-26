@@ -5,6 +5,7 @@ import Users from './views/Users';
 import UserDetails from './views/UserDetails';
 import Login from './views/Login';
 import CreateUser from './views/CreateUser';
+import Welcome from './views/Welcome';
 
 const Routes = (): JSX.Element => {
   return (
@@ -27,6 +28,7 @@ const Routes = (): JSX.Element => {
           <AuthGuard><UserDetails /></AuthGuard>
         }
       />
+      <Route path="/" element={<Welcome />} />  // Updated for Welcome page
       <Route
         path="/login"
         element={<Login />}

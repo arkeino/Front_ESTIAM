@@ -69,89 +69,74 @@ const UserDetailView = (): JSX.Element => {
 
   return (
     <DashboardLayout>
-      <Box
-        display="flex"
-        justifyContent="center"
-        sx={{ backgroundColor: '#2e2e2e', minHeight: '100vh', padding: 4 }}
+  <Box
+    display="flex"
+    justifyContent="center"
+    sx={{ backgroundColor: '#2e2e2e', minHeight: '100vh', padding: 4 }}
+  >
+    <Stack spacing={2}>
+      {notification.error && (
+        <Alert severity="error">{notification.message}</Alert>
+      )}
+
+      <Card
+        variant="outlined"
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          width: 500,
+          borderColor: 'lightgray',
+          backgroundColor: '#f5f5f5',
+          color: '#333',
+          padding: 5, // Added padding for spacing
+        }}
       >
-        <Stack spacing={2}>
-          {notification.error && (
-            <Alert severity="error">{notification.message}</Alert>
-          )}
+        <Avatar
+          alt={userInfo.name}
+          src={userInfo.avatar}
+          sx={{ width: 90, height: 90, marginRight: 2 }}
+        />
+        <Stack spacing={1}>
+          <Typography variant="h6" gutterBottom>
+            <strong>User ID:</strong> {userInfo.id}
+          </Typography>
 
-          <Card
-            variant="outlined"
-            sx={{
-              width: 500,
-              borderColor: 'lightgray',
-              textAlign: 'center',
-              backgroundColor: '#f5f5f5',
-              color: '#333',
-            }}
-          >
-            <Avatar
-              alt={userInfo.name}
-              src={userInfo.avatar}
-              sx={{
-                width: 90,
-                height: 90,
-                display: 'flex',
-                margin: 'auto',
-                marginTop: 2,
-              }}
-            />
-            <Typography variant="h6" gutterBottom>
-              <strong>User ID:</strong> {userInfo.id}
-            </Typography>
-
-            <Typography variant="h6" gutterBottom>
-              <strong>Username:</strong>{' '}
-              {isEditing ? (
-                <TextField
-                  size="small"
-                  variant="outlined"
-                  value={userInfo.name}
-                  onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                    setUserInfo({
-                      ...userInfo,
-                      name: event.target.value
-                    });
-                  }}
-                />
-              ) : (
-                userInfo.name
-              )}
-            </Typography>
-            <Typography variant="h6" gutterBottom>
-              <strong>Email:</strong> {userInfo.email}
-            </Typography>
-            <Typography variant="h6" gutterBottom>
-              <strong>Role:</strong> {userInfo.role}
-            </Typography>
-          </Card>
-          <Stack
-            direction="row"
-            justifyContent="center"
-            spacing={2}
-          >
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={toggleEditUser}
-            >
-              {isEditing ? 'Save' : 'Edit'}
-            </Button>
-            <Button
-              variant="contained"
-              color="secondary"
-              onClick={handleDeleteUser}
-            >
-              Delete
-            </Button>
-          </Stack>
+          <Typography variant="h6" gutterBottom>
+            <strong>Username:</strong>{' '}
+            {isEditing ? (
+              <TextField
+                size="small"
+                variant="outlined"
+                value={userInfo.name}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                  setUserInfo({ ...userInfo, name: event.target.value });
+                }}
+              />
+            ) : (
+              userInfo.name
+            )}
+          </Typography>
+          <Typography variant="h6" gutterBottom>
+            <strong>Email:</strong> {userInfo.email}
+          </Typography>
+          <Typography variant="h6" gutterBottom>
+            <strong>Role:</strong> {userInfo.role}
+          </Typography>
         </Stack>
-      </Box>
-    </DashboardLayout>
+      </Card>
+
+      <Stack direction="row" justifyContent="center" spacing={2}>
+        <Button variant="contained" color="primary" onClick={toggleEditUser}>
+          {isEditing ? 'Save' : 'Edit'}
+        </Button>
+        <Button variant="contained" color="secondary" onClick={handleDeleteUser}>
+          Delete
+        </Button>
+      </Stack>
+    </Stack>
+  </Box>
+</DashboardLayout>
+
   );
 };
 
