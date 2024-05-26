@@ -1,61 +1,126 @@
-import  React from 'react';
+/* 
+comment récupere les données et filter comme la page users.
+*/
+
+import * as React from 'react';
+import { styled, alpha } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
+import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
+import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
+import InputBase from '@mui/material/InputBase';
 import Container from '@mui/material/Container';
-import Button from '@mui/material/Button';
+import SearchIcon from '@mui/icons-material/Search';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/use-auth';
+import Button from '@mui/material/Button';
 
-const TopBar = (): JSX.Element => {
+const Search = styled('div')(({ theme }) => ({
+  position: 'relative',
+  borderRadius: theme.shape.borderRadius,
+  backgroundColor: 'white',
+  '&:hover': {
+    backgroundColor: alpha(theme.palette.common.white, 0.25),
+  },
+  marginLeft: 0,
+  width: '100%',
+  [theme.breakpoints.up('sm')]: {
+    marginLeft: theme.spacing(1),
+    width: 'auto',
+  },
+}));
 
-  const { logout } = useAuth();
-  const navigate = useNavigate();
+const SearchIconWrapper = styled('div')(({ theme }) => ({
+  padding: theme.spacing(0, 2),
+  height: '100%',
+  position: 'absolute',
+  pointerEvents: 'none',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+}));
 
-  const handleLogout = async () => {
-    await logout();
-    navigate('/login');
-  };
+const StyledInputBase = styled(InputBase)(({ theme }) => ({
+  color: 'inherit',
+  width: '100%',
+  '& .MuiInputBase-input': {
+    padding: theme.spacing(1, 1, 1, 0),
+    // vertical padding + font size from searchIcon
+    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+    transition: theme.transitions.create('width'),
+    [theme.breakpoints.up('sm')]: {
+      width: '20ch',
+    },
+  },
+}));
 
-  const appBarBarStyle = {
-    backgroundColor: 'blue',
-  };
 
-  return(
-    <AppBar
-      sx={appBarBarStyle}
-      position="fixed"
+const appBarStyle = {
+    backgroundColor: 'purple'
+};
+
+
+const SearchBar = (): JSX.Element =>{
+
+  const appBarStyle = {
+    backgroundColor: 'purple'
+};
+const { logout } = useAuth();
+const navigate = useNavigate();
+
+const handleLogout = async () => {
+  await logout();
+  navigate('/login');
+};
+  return (
+    <AppBar 
+        position="fixed"
+        sx={appBarStyle}
     >
-      <Container maxWidth="xl">
-        <Toolbar disableGutters>
-          <Typography
-            variant="h6"
-            noWrap
-            component="a"
-            href="/"
-            sx={{
-              mr: 2,
-              fontFamily: 'monospace',
-              fontWeight: 700,
-              letterSpacing: '.3rem',
-              color: 'inherit',
-              textDecoration: 'none',
-              flexGrow: 1
-            }}
-          >
-            ESTIAM STUDENT
-          </Typography>
-          <Button
+        <Container /*  maxWidth="x1" */>
+            <Toolbar disableGutters>
+            <Typography
+               variant="h5"
+               noWrap
+               component="a"
+               href="/"
+               sx={{
+                mr: 2,
+                flexGrow: 1,
+                fontFamily: 'monospace',
+                fontWeight: 700,
+                letterSpacing: '.3rem',
+                color: 'inherit',
+                textDecoration: 'none',
+               }}
+            >
+                TechCorp
+            </Typography>
+            <Search>
+                <SearchIconWrapper>
+                <SearchIcon  sx={{
+                    color: 'black',
+                }}/>
+                </SearchIconWrapper>
+                <StyledInputBase
+                placeholder="Rechercher un nom"
+                inputProps={{ 'aria-label': 'search' }}
+                sx={{color: 'black'}}
+                />
+            </Search>
+            <Button
             color="inherit"
             variant="outlined"
             onClick={handleLogout}
           >
             Logout
           </Button>
-        </Toolbar>
-      </Container>
-    </AppBar>
-  );
-};
+            </Toolbar>
 
-export default TopBar;
+        </Container>
+      </AppBar>
+  );
+}
+
+export default SearchBar;
