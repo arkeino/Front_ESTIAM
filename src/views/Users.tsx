@@ -26,6 +26,7 @@ const Users = (): JSX.Element => {
   const handleCloseUserDialog = (action?: string, user?: User) => {
     if (action === 'created' && user) {
       setUsers([...users, user]);
+      alert('User created successfully!');
     }
     setOpenUserDialog(false);
   };
