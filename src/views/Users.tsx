@@ -10,13 +10,17 @@ import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import CreateUserDialog from '../components/CreateUserDialog';
 
-const USERS_PER_PAGE = 5;
+const USERS_PER_PAGE = 6;
 
 const Users = (): JSX.Element => {
   const [users, setUsers] = useState<User[]>([]);
   const [openUserDialog, setOpenUserDialog] = useState<boolean>(false);
+
+  // Pagination
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalUsers, setTotalUsers] = useState(0);
+
+  //Search
   const [searchText, setSearchText] = useState<string>('');
 
   const handleOpenUserDialog = () => {
@@ -83,13 +87,27 @@ const Users = (): JSX.Element => {
                 md={8}
                 display="flex"
                 justifyContent="center"
+                sx={{ backgroundColor: 'white', padding: 2, borderRadius: 1 }}
+                
               >
                 <TextField
                   fullWidth
-                  label="Search A User by Name"
+                  label="Rechercher un nom"
                   variant="outlined"
                   value={searchText}
                   onChange={handleSearchChange}
+                  sx={{
+                    backgroundColor: 'white',
+                    '& .MuiInputBase-input': {
+                      color: 'red',
+                    },
+                    '& .MuiInputLabel-root': {
+                      color: 'red',
+                    },
+                    '& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'red',
+                    },
+                  }}
                 />
               </Grid>
               <Grid
@@ -125,6 +143,19 @@ const Users = (): JSX.Element => {
                   onChange={handlePageChange}
                   variant="outlined"
                   shape="rounded"
+                  sx={{
+                    '& .MuiPaginationItem-root': {
+                      color: 'white', 
+                      borderColor: 'white', 
+                    },
+                    '& .MuiPaginationItem-root.Mui-selected': {
+                      backgroundColor: 'white',
+                      color: 'black', 
+                    },
+                    '& .MuiPaginationItem-ellipsis': {
+                      color: 'white', 
+                    },
+                  }}
                 />
               </Grid>
             </Grid>
